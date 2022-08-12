@@ -1,4 +1,4 @@
-# PBS TF s3 module
+# PBS TF S3 Module
 
 ## Installation
 
@@ -7,7 +7,7 @@
 Use this URL for the source of the module. See the usage examples below for more details.
 
 ```hcl
-github.com/pbs/terraform-aws-s3-module?ref=0.0.1
+github.com/pbs/terraform-aws-s3-module?ref=x.y.z
 ```
 
 ### Alternative Installation Methods
@@ -28,7 +28,7 @@ Integrate this module like so:
 
 ```hcl
 module "s3" {
-  source = "github.com/pbs/terraform-aws-s3-module?ref=0.0.1"
+  source = "github.com/pbs/terraform-aws-s3-module?ref=x.y.z"
 
   # Tagging Parameters
   organization = var.organization
@@ -63,7 +63,7 @@ module "s3" {
 
 If this repo is added as a subtree, then the version of the module should be close to the version shown here:
 
-`0.0.1`
+`x.y.z`
 
 Note, however that subtrees can be altered as desired within repositories.
 
@@ -105,6 +105,7 @@ No modules.
 | [aws_s3_bucket_lifecycle_configuration.lifecycle_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_ownership_controls.ownership_controls](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
 | [aws_s3_bucket_policy.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_replication_configuration.replication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_replication_configuration) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
 | [aws_s3_bucket_versioning.versioning](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
@@ -122,9 +123,13 @@ No modules.
 | <a name="input_repo"></a> [repo](#input\_repo) | Tag used to point to the repo using this module | `string` | n/a | yes |
 | <a name="input_acl"></a> [acl](#input\_acl) | Canned ACL for the bucket. If an ACL is not provided, the bucket will be created with ACLs disabled | `string` | `null` | no |
 | <a name="input_allow_anonymous_vpce_access"></a> [allow\_anonymous\_vpce\_access](#input\_allow\_anonymous\_vpce\_access) | Create bucket policy that allows anonymous VPCE access. If bucket\_policy is defined, this will be ignored. | `bool` | `false` | no |
+| <a name="input_block_public_acls"></a> [block\_public\_acls](#input\_block\_public\_acls) | Whether Amazon S3 should block public ACLs for this bucket. | `bool` | `true` | no |
+| <a name="input_block_public_policy"></a> [block\_public\_policy](#input\_block\_public\_policy) | Whether Amazon S3 should block public bucket policies for this bucket. | `bool` | `true` | no |
 | <a name="input_bucket_policy"></a> [bucket\_policy](#input\_bucket\_policy) | Policy to apply to the bucket. If null, one will be guessed based on surrounding functionality | `string` | `null` | no |
 | <a name="input_cors_rules"></a> [cors\_rules](#input\_cors\_rules) | CORS Rules | <pre>set(object({<br>    allowed_headers = list(string),<br>    allowed_methods = list(string),<br>    allowed_origins = list(string),<br>    expose_headers  = list(string),<br>    max_age_seconds = number<br>  }))</pre> | `[]` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | Allow destruction of an S3 bucket without clearing out the contents first | `bool` | `false` | no |
+| <a name="input_force_tls"></a> [force\_tls](#input\_force\_tls) | Deny HTTP requests that are made to the bucket without TLS. | `bool` | `true` | no |
+| <a name="input_ignore_public_acls"></a> [ignore\_public\_acls](#input\_ignore\_public\_acls) | Whether Amazon S3 should ignore public ACLs for this bucket. | `bool` | `true` | no |
 | <a name="input_inventory_bucket"></a> [inventory\_bucket](#input\_inventory\_bucket) | Name of the bucket to use for inventory. If null, will not configure inventory configurations. | `string` | `null` | no |
 | <a name="input_inventory_frequency"></a> [inventory\_frequency](#input\_inventory\_frequency) | Frequency of inventory collection. | `string` | `"Daily"` | no |
 | <a name="input_inventory_included_object_versions"></a> [inventory\_included\_object\_versions](#input\_inventory\_included\_object\_versions) | Included object versions for inventory collection. | `string` | `"All"` | no |
@@ -134,6 +139,7 @@ No modules.
 | <a name="input_replication_configuration_set"></a> [replication\_configuration\_set](#input\_replication\_configuration\_set) | Set of (single) replication that needs to be managed by this bucket. If empty, no replication takes place. | <pre>set(object({<br>    role = string,<br>    rules = set(object({<br>      id                                           = string<br>      priority                                     = number<br>      status                                       = string<br>      destination_account_id                       = string<br>      destination_bucket                           = string<br>      destination_access_control_translation_owner = string<br>    }))<br>  }))</pre> | `[]` | no |
 | <a name="input_replication_configuration_shortcut"></a> [replication\_configuration\_shortcut](#input\_replication\_configuration\_shortcut) | Shorthand version of the configuration used in replication\_configuration\_set. Is overridden by replication\_configuration\_set if defined. | <pre>object({<br>    destination_account_id = string<br>    destination_bucket     = string<br>  })</pre> | `null` | no |
 | <a name="input_replication_source"></a> [replication\_source](#input\_replication\_source) | The account number and role for the source bucket in a replication configuration. Creates a bucket policy. | <pre>object({<br>    account_id = string<br>    role       = string<br>  })</pre> | `null` | no |
+| <a name="input_restrict_public_buckets"></a> [restrict\_public\_buckets](#input\_restrict\_public\_buckets) | Whether Amazon S3 should restrict public bucket policies for this bucket. | `bool` | `true` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Extra tags | `map(string)` | `{}` | no |
 | <a name="input_use_prefix"></a> [use\_prefix](#input\_use\_prefix) | Create bucket with prefix instead of explicit name | `bool` | `true` | no |
 | <a name="input_vpce"></a> [vpce](#input\_vpce) | Name of the VPC endpoint that should have access to this bucket. Only used when `allow_anonymous_vpce_access` is true. | `string` | `null` | no |

@@ -111,6 +111,26 @@ data "aws_iam_policy_document" "bucket_policy_doc" {
       resources = ["arn:aws:s3:::${aws_s3_bucket.bucket.id}/*"]
     }
   }
+  dynamic "statement" {
+    for_each = var.force_tls ? [var.force_tls] : []
+    content {
+      effect = "Deny"
+      principals {
+        type        = "*"
+        identifiers = ["*"]
+      }
+      actions = ["s3:*"]
+      resources = [
+        "arn:aws:s3:::${aws_s3_bucket.bucket.id}",
+        "arn:aws:s3:::${aws_s3_bucket.bucket.id}/*",
+      ]
+      condition {
+        test     = "Bool"
+        variable = "aws:SecureTransport"
+        values   = ["false"]
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
@@ -118,4 +138,13 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 
   bucket = aws_s3_bucket.bucket.id
   policy = local.bucket_policy
+}
+
+resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  bucket = aws_s3_bucket.bucket.id
+
+  block_public_acls       = var.block_public_acls
+  block_public_policy     = var.block_public_policy
+  ignore_public_acls      = var.ignore_public_acls
+  restrict_public_buckets = var.restrict_public_buckets
 }
