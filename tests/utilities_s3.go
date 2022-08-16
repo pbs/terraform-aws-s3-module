@@ -22,7 +22,7 @@ func testS3(t *testing.T, variant string) {
 
 	terraform.Init(t, terraformOptions)
 
-	// The inventory variant requires a separate targetted
+	// The inventory variant requires a separate targeted
 	// apply step to create the inventory bucket.
 	if variant == "inventory" {
 		targetInventoryBucketOptions := &terraform.Options{

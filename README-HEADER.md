@@ -1,4 +1,4 @@
-# PBS TF s3 module
+# PBS TF S3 Module
 
 ## Installation
 
