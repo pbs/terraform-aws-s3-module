@@ -129,6 +129,12 @@ variable "replication_source" {
   })
 }
 
+variable "create_bucket_policy" {
+  description = "Create a bucket policy for the bucket"
+  default     = true
+  type        = bool
+}
+
 variable "bucket_policy" {
   description = "Policy to apply to the bucket. If null, one will be guessed based on surrounding functionality"
   default     = null

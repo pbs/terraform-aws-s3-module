@@ -19,9 +19,7 @@ locals {
     }
   ])
 
-  generate_bucket_policy = var.bucket_policy == null && (var.allow_anonymous_vpce_access || local.create_replication_target_policy)
-
-  create_bucket_policy = var.bucket_policy != null || local.generate_bucket_policy
+  generate_bucket_policy = var.create_bucket_policy && var.bucket_policy == null && (var.allow_anonymous_vpce_access || local.create_replication_target_policy || var.force_tls)
 
   bucket_policy = var.bucket_policy != null ? var.bucket_policy : local.generate_bucket_policy ? data.aws_iam_policy_document.bucket_policy_doc[0].json : null
 
