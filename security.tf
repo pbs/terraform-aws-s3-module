@@ -50,7 +50,7 @@ resource "aws_iam_role_policy" "replication_policy" {
 }
 
 data "aws_iam_policy_document" "bucket_policy_doc" {
-  count = local.create_bucket_policy ? 1 : 0
+  count = local.generate_bucket_policy ? 1 : 0
   dynamic "statement" {
     for_each = var.allow_anonymous_vpce_access ? [var.allow_anonymous_vpce_access] : []
     content {
@@ -134,7 +134,7 @@ data "aws_iam_policy_document" "bucket_policy_doc" {
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  count = local.create_bucket_policy ? 1 : 0
+  count = var.create_bucket_policy ? 1 : 0
 
   bucket = aws_s3_bucket.bucket.id
   policy = local.bucket_policy
