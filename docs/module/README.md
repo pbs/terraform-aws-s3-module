@@ -1,3 +1,3 @@
-# s3 module
+# S3 module
 
 This directory will be used for any documentation that is unique to this module.
