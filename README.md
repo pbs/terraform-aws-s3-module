@@ -7,7 +7,7 @@
 Use this URL for the source of the module. See the usage examples below for more details.
 
 ```hcl
-github.com/pbs/terraform-aws-s3-module?ref=1.0.0
+github.com/pbs/terraform-aws-s3-module?ref=x.y.z
 ```
 
 ### Alternative Installation Methods
@@ -28,7 +28,7 @@ Integrate this module like so:
 
 ```hcl
 module "s3" {
-  source = "github.com/pbs/terraform-aws-s3-module?ref=1.0.0"
+  source = "github.com/pbs/terraform-aws-s3-module?ref=x.y.z"
 
   # Tagging Parameters
   organization = var.organization
@@ -63,7 +63,7 @@ module "s3" {
 
 If this repo is added as a subtree, then the version of the module should be close to the version shown here:
 
-`1.0.0`
+`x.y.z`
 
 Note, however that subtrees can be altered as desired within repositories.
 
@@ -106,7 +106,6 @@ Below is automatically generated documentation on this Terraform module using [t
 | [aws_s3_bucket_inventory.inventory_prefix](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_inventory) | resource |
 | [aws_s3_bucket_lifecycle_configuration.lifecycle_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_ownership_controls.ownership_controls](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
-| [aws_s3_bucket_policy.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_replication_configuration.replication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_replication_configuration) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
