@@ -21,7 +21,7 @@ locals {
 
   generate_bucket_policy = var.create_bucket_policy && var.bucket_policy == null && (var.allow_anonymous_vpce_access || local.create_replication_target_policy || var.force_tls)
 
-  bucket_policy = var.bucket_policy != null ? var.bucket_policy : local.generate_bucket_policy ? data.aws_iam_policy_document.bucket_policy_doc[0].json : null
+  bucket_policy = var.bucket_policy != null ? var.bucket_policy : local.generate_bucket_policy ? module.s3_policy[0].bucket_policy : null
 
   create_replication_target_policy = var.replication_source != null
   destination_bucket               = length(local.replication_configuration_set) == 0 ? null : tolist(tolist(local.replication_configuration_set)[0].rules)[0].destination_bucket
