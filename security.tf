@@ -49,95 +49,32 @@ resource "aws_iam_role_policy" "replication_policy" {
   })
 }
 
-data "aws_iam_policy_document" "bucket_policy_doc" {
-  count = local.generate_bucket_policy ? 1 : 0
-  dynamic "statement" {
-    for_each = var.allow_anonymous_vpce_access ? [var.allow_anonymous_vpce_access] : []
-    content {
-      actions = [
-        "s3:GetObject",
-      ]
-      resources = ["arn:aws:s3:::${aws_s3_bucket.bucket.id}/*"]
-      condition {
-        test     = "StringEquals"
-        variable = "aws:sourceVpce"
-        values   = [var.vpce]
-      }
-      principals {
-        type        = "*"
-        identifiers = ["*"]
-      }
-    }
-  }
-  dynamic "statement" {
-    for_each = local.create_replication_target_policy ? [local.create_replication_target_policy] : []
-    content {
-      principals {
-        type        = "AWS"
-        identifiers = ["arn:aws:iam::${var.replication_source.account_id}:role/${var.replication_source.role}"]
-      }
-      actions = [
-        "s3:ReplicateDelete",
-        "s3:ReplicateObject",
-      ]
-      resources = ["arn:aws:s3:::${aws_s3_bucket.bucket.id}/*"]
-    }
-  }
-  dynamic "statement" {
-    for_each = local.create_replication_target_policy ? [local.create_replication_target_policy] : []
-    content {
-      principals {
-        type        = "AWS"
-        identifiers = ["arn:aws:iam::${var.replication_source.account_id}:role/${var.replication_source.role}"]
-      }
-      actions = [
-        "s3:List*",
-        "s3:GetBucketVersioning",
-        "s3:PutBucketVersioning"
-      ]
-      resources = ["arn:aws:s3:::${aws_s3_bucket.bucket.id}"]
-    }
-  }
-  dynamic "statement" {
-    for_each = local.create_replication_target_policy ? [local.create_replication_target_policy] : []
-    content {
-      principals {
-        type        = "AWS"
-        identifiers = ["arn:aws:iam::${var.replication_source.account_id}:role/${var.replication_source.role}"]
-      }
-      actions = [
-        "s3:ObjectOwnerOverrideToBucketOwner"
-      ]
-      resources = ["arn:aws:s3:::${aws_s3_bucket.bucket.id}/*"]
-    }
-  }
-  dynamic "statement" {
-    for_each = var.force_tls ? [var.force_tls] : []
-    content {
-      effect = "Deny"
-      principals {
-        type        = "*"
-        identifiers = ["*"]
-      }
-      actions = ["s3:*"]
-      resources = [
-        "arn:aws:s3:::${aws_s3_bucket.bucket.id}",
-        "arn:aws:s3:::${aws_s3_bucket.bucket.id}/*",
-      ]
-      condition {
-        test     = "Bool"
-        variable = "aws:SecureTransport"
-        values   = ["false"]
-      }
-    }
-  }
-}
-
 resource "aws_s3_bucket_policy" "bucket_policy" {
   count = var.create_bucket_policy ? 1 : 0
 
   bucket = aws_s3_bucket.bucket.id
   policy = local.bucket_policy
+}
+
+module "s3_policy" {
+  source = "github.com/pbs/terraform-aws-s3-bucket-policy-module?ref=1.0.1"
+  count  = var.create_bucket_policy ? 1 : 0
+
+  name = aws_s3_bucket.bucket.id
+
+  force_tls = var.force_tls
+
+  allow_anonymous_vpce_access = var.allow_anonymous_vpce_access
+  vpce                        = var.vpce
+
+  replication_source = var.replication_source
+
+  cloudfront_oac_access_statements = var.cloudfront_oac_access_statements
+
+  source_policy_documents   = var.source_policy_documents
+  override_policy_documents = var.override_policy_documents
+
+  product = var.product
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {

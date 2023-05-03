@@ -120,37 +120,10 @@ variable "replication_configuration_shortcut" {
   })
 }
 
-variable "replication_source" {
-  description = "The account number and role for the source bucket in a replication configuration. Creates a bucket policy."
-  default     = null
-  type = object({
-    account_id = string
-    role       = string
-  })
-}
-
 variable "create_bucket_policy" {
   description = "Create a bucket policy for the bucket"
   default     = true
   type        = bool
-}
-
-variable "bucket_policy" {
-  description = "Policy to apply to the bucket. If null, one will be guessed based on surrounding functionality"
-  default     = null
-  type        = string
-}
-
-variable "allow_anonymous_vpce_access" {
-  description = "Create bucket policy that allows anonymous VPCE access. If bucket_policy is defined, this will be ignored."
-  default     = false
-  type        = bool
-}
-
-variable "vpce" {
-  description = "Name of the VPC endpoint that should have access to this bucket. Only used when `allow_anonymous_vpce_access` is true."
-  default     = null
-  type        = string
 }
 
 variable "inventory_bucket" {
@@ -191,12 +164,6 @@ variable "ignore_public_acls" {
 
 variable "restrict_public_buckets" {
   description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
-  default     = true
-  type        = bool
-}
-
-variable "force_tls" {
-  description = "Deny HTTP requests that are made to the bucket without TLS."
   default     = true
   type        = bool
 }
