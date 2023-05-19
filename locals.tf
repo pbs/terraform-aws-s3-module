@@ -23,8 +23,7 @@ locals {
 
   object_ownership = var.acl != null ? "BucketOwnerPreferred" : "BucketOwnerEnforced"
 
-  create_inventory_config = var.inventory_bucket != null
-  inventory_bucket_prefix = "${data.aws_caller_identity.current.account_id}/${aws_s3_bucket.bucket.id}/"
+  inventory_bucket_prefix = var.inventory_config == null ? null : var.inventory_config.destination.bucket.prefix != null ? var.inventory_config.destination.bucket.prefix : data.aws_caller_identity.current.account_id
 
   creator = "terraform"
 

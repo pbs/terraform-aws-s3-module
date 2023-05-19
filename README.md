@@ -7,7 +7,7 @@
 Use this URL for the source of the module. See the usage examples below for more details.
 
 ```hcl
-github.com/pbs/terraform-aws-s3-module?ref=1.0.3
+github.com/pbs/terraform-aws-s3-module?ref=x.y.z
 ```
 
 ### Alternative Installation Methods
@@ -28,7 +28,7 @@ Integrate this module like so:
 
 ```hcl
 module "s3" {
-  source = "github.com/pbs/terraform-aws-s3-module?ref=1.0.3"
+  source = "github.com/pbs/terraform-aws-s3-module?ref=x.y.z"
 
   # Tagging Parameters
   organization = var.organization
@@ -63,7 +63,7 @@ module "s3" {
 
 If this repo is added as a subtree, then the version of the module should be close to the version shown here:
 
-`1.0.3`
+`x.y.z`
 
 Note, however that subtrees can be altered as desired within repositories.
 
@@ -133,9 +133,7 @@ Below is automatically generated documentation on this Terraform module using [t
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | Allow destruction of an S3 bucket without clearing out the contents first | `bool` | `false` | no |
 | <a name="input_force_tls"></a> [force\_tls](#input\_force\_tls) | Deny HTTP requests that are made to the bucket without TLS. | `bool` | `true` | no |
 | <a name="input_ignore_public_acls"></a> [ignore\_public\_acls](#input\_ignore\_public\_acls) | Whether Amazon S3 should ignore public ACLs for this bucket. | `bool` | `true` | no |
-| <a name="input_inventory_bucket"></a> [inventory\_bucket](#input\_inventory\_bucket) | Name of the bucket to use for inventory. If null, will not configure inventory configurations. | `string` | `null` | no |
-| <a name="input_inventory_frequency"></a> [inventory\_frequency](#input\_inventory\_frequency) | Frequency of inventory collection. | `string` | `"Daily"` | no |
-| <a name="input_inventory_included_object_versions"></a> [inventory\_included\_object\_versions](#input\_inventory\_included\_object\_versions) | Included object versions for inventory collection. | `string` | `"All"` | no |
+| <a name="input_inventory_config"></a> [inventory\_config](#input\_inventory\_config) | Inventory configuration | <pre>object({<br>    enabled = optional(bool, true)<br><br>    included_object_versions = optional(string, "All")<br>    destination = object({<br>      bucket = object({<br>        name       = string<br>        format     = optional(string, "Parquet")<br>        prefix     = optional(string)<br>        account_id = optional(string)<br>      })<br>    })<br>    filter = optional(object({<br>      prefix = string<br>    }))<br>    schedule = optional(object({<br>      frequency = string<br>      }), {<br>      frequency = "Daily"<br>    })<br>    optional_fields = optional(list(string), [<br>      "Size",<br>      "LastModifiedDate",<br>      "StorageClass",<br>      "IntelligentTieringAccessTier",<br>    ])<br>  })</pre> | `null` | no |
 | <a name="input_is_versioned"></a> [is\_versioned](#input\_is\_versioned) | Is versioning enabled? | `bool` | `true` | no |
 | <a name="input_lifecycle_rules"></a> [lifecycle\_rules](#input\_lifecycle\_rules) | List of maps containing configuration of object lifecycle management. | `any` | <pre>[<br>  {<br>    "abort_incomplete_multipart_upload_days": 7,<br>    "enabled": true,<br>    "id": "default-lifecycle-rule",<br>    "noncurrent_version_transition": [<br>      {<br>        "days": 30,<br>        "storage_class": "GLACIER"<br>      }<br>    ],<br>    "transition": [<br>      {<br>        "days": 7,<br>        "storage_class": "INTELLIGENT_TIERING"<br>      }<br>    ]<br>  }<br>]</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Name to use for the bucket. If null, will default to product. | `string` | `null` | no |
