@@ -126,24 +126,6 @@ variable "create_bucket_policy" {
   type        = bool
 }
 
-variable "inventory_bucket" {
-  description = "Name of the bucket to use for inventory. If null, will not configure inventory configurations."
-  default     = null
-  type        = string
-}
-
-variable "inventory_frequency" {
-  description = "Frequency of inventory collection."
-  default     = "Daily"
-  type        = string
-}
-
-variable "inventory_included_object_versions" {
-  description = "Included object versions for inventory collection."
-  default     = "All"
-  type        = string
-}
-
 variable "block_public_acls" {
   description = "Whether Amazon S3 should block public ACLs for this bucket."
   default     = true
@@ -166,4 +148,36 @@ variable "restrict_public_buckets" {
   description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
   default     = true
   type        = bool
+}
+
+variable "inventory_config" {
+  description = "Inventory configuration"
+  default     = null
+  type = object({
+    enabled = optional(bool, true)
+
+    included_object_versions = optional(string, "All")
+    destination = object({
+      bucket = object({
+        name       = string
+        format     = optional(string, "Parquet")
+        prefix     = optional(string)
+        account_id = optional(string)
+      })
+    })
+    filter = optional(object({
+      prefix = string
+    }))
+    schedule = optional(object({
+      frequency = string
+      }), {
+      frequency = "Daily"
+    })
+    optional_fields = optional(list(string), [
+      "Size",
+      "LastModifiedDate",
+      "StorageClass",
+      "IntelligentTieringAccessTier",
+    ])
+  })
 }

@@ -14,7 +14,13 @@ module "s3_inventory" {
 module "s3" {
   source = "../.."
 
-  inventory_bucket = module.s3_inventory.name
+  inventory_config = {
+    destination = {
+      bucket = {
+        name = module.s3_inventory.name
+      }
+    }
+  }
 
   force_destroy = true
 

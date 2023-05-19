@@ -1,20 +1,32 @@
 resource "aws_s3_bucket_inventory" "inventory_prefix" {
-  count = local.create_inventory_config ? 1 : 0
+  count = var.inventory_config != null ? 1 : 0
 
   bucket = aws_s3_bucket.bucket.id
-  name   = var.inventory_bucket
+  name   = var.inventory_config.destination.bucket.name
 
-  included_object_versions = var.inventory_included_object_versions
+  enabled = var.inventory_config.enabled
+
+  included_object_versions = var.inventory_config.included_object_versions
 
   schedule {
-    frequency = var.inventory_frequency
+    frequency = var.inventory_config.schedule.frequency
   }
+
+  dynamic "filter" {
+    for_each = var.inventory_config.filter != null ? [var.inventory_config.filter] : []
+    content {
+      prefix = filter.value.prefix
+    }
+  }
+
+  optional_fields = var.inventory_config.optional_fields
 
   destination {
     bucket {
-      format     = "CSV"
-      bucket_arn = "arn:aws:s3:::${var.inventory_bucket}"
+      format     = var.inventory_config.destination.bucket.format
+      bucket_arn = "arn:aws:s3:::${var.inventory_config.destination.bucket.name}"
       prefix     = local.inventory_bucket_prefix
+      account_id = var.inventory_config.destination.bucket.account_id
     }
   }
 }
