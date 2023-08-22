@@ -91,8 +91,36 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_configuration" {
 
     content {
       id     = rule.value.id
-      prefix = rule.value.prefix
       status = rule.value.enabled ? "Enabled" : "Disabled"
+
+      dynamic "filter" {
+        for_each = rule.value.filter == null ? [] : [rule.value.filter]
+
+        content {
+          dynamic "and" {
+            for_each = filter.value.and == null ? [] : filter.value.and
+
+            content {
+              object_size_greater_than = and.value.object_size_greater_than
+              object_size_less_than    = and.value.object_size_less_than
+              prefix                   = and.value.prefix
+              tags                     = and.value.tags
+            }
+          }
+          object_size_greater_than = filter.value.object_size_greater_than
+          object_size_less_than    = filter.value.object_size_less_than
+          prefix                   = filter.value.prefix
+
+          dynamic "tag" {
+            for_each = filter.value.tag == null ? [] : [filter.value.tag]
+
+            content {
+              key   = tag.value.key
+              value = tag.value.value
+            }
+          }
+        }
+      }
 
       dynamic "abort_incomplete_multipart_upload" {
         for_each = rule.value.abort_incomplete_multipart_upload_days == null ? [] : [rule.value.abort_incomplete_multipart_upload_days]

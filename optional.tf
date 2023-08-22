@@ -43,10 +43,23 @@ variable "cors_rules" {
 variable "lifecycle_rules" {
   description = "List of maps containing configuration of object lifecycle management."
   type = list(object({
-    id                                     = string
-    prefix                                 = optional(string)
-    enabled                                = optional(bool, true)
-    tags                                   = optional(map(string))
+    id      = string
+    enabled = optional(bool, true)
+    filter = optional(object({
+      and = optional(list(object({
+        object_size_greater_than = optional(number)
+        object_size_less_than    = optional(number)
+        prefix                   = optional(string)
+        tags                     = optional(map(string))
+      })))
+      object_size_greater_than = optional(number)
+      object_size_less_than    = optional(number)
+      prefix                   = optional(string)
+      tag = optional(object({
+        key   = string
+        value = string
+      }))
+    }))
     abort_incomplete_multipart_upload_days = optional(number)
     expiration = optional(object({
       date                         = optional(string)
