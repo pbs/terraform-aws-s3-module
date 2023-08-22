@@ -90,52 +90,52 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_configuration" {
     iterator = rule
 
     content {
-      id     = lookup(rule.value, "id", null)
-      prefix = lookup(rule.value, "prefix", null)
+      id     = rule.value.id
+      prefix = rule.value.prefix
       status = rule.value.enabled ? "Enabled" : "Disabled"
 
       dynamic "abort_incomplete_multipart_upload" {
-        for_each = lookup(rule.value, "abort_incomplete_multipart_upload_days", null) == null ? [] : [rule.value.abort_incomplete_multipart_upload_days]
+        for_each = rule.value.abort_incomplete_multipart_upload_days == null ? [] : [rule.value.abort_incomplete_multipart_upload_days]
         content {
           days_after_initiation = abort_incomplete_multipart_upload.value
         }
       }
 
       dynamic "expiration" {
-        for_each = length(keys(lookup(rule.value, "expiration", {}))) == 0 ? [] : [rule.value.expiration]
+        for_each = rule.value.expiration == null ? [] : [rule.value.expiration]
 
         content {
-          date                         = lookup(expiration.value, "date", null)
-          days                         = lookup(expiration.value, "days", null)
-          expired_object_delete_marker = lookup(expiration.value, "expired_object_delete_marker", null)
+          date                         = rule.value.expiration.date
+          days                         = rule.value.expiration.days
+          expired_object_delete_marker = rule.value.expiration.expired_object_delete_marker
         }
       }
 
       dynamic "transition" {
-        for_each = lookup(rule.value, "transition", [])
+        for_each = rule.value.transition
 
         content {
-          date          = lookup(transition.value, "date", null)
-          days          = lookup(transition.value, "days", null)
+          date          = transition.value.date
+          days          = transition.value.days
           storage_class = transition.value.storage_class
         }
       }
 
       dynamic "noncurrent_version_expiration" {
-        for_each = length(keys(lookup(rule.value, "noncurrent_version_expiration", {}))) == 0 ? [] : [rule.value.noncurrent_version_expiration]
+        for_each = rule.value.noncurrent_version_expiration == null ? [] : [rule.value.noncurrent_version_expiration]
         iterator = expiration
 
         content {
-          noncurrent_days = lookup(expiration.value, "days", null)
+          noncurrent_days = expiration.value.days
         }
       }
 
       dynamic "noncurrent_version_transition" {
-        for_each = lookup(rule.value, "noncurrent_version_transition", [])
+        for_each = rule.value.noncurrent_version_transition
         iterator = transition
 
         content {
-          noncurrent_days = lookup(transition.value, "days", null)
+          noncurrent_days = transition.value.days
           storage_class   = transition.value.storage_class
         }
       }
