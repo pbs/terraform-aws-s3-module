@@ -7,7 +7,7 @@
 Use this URL for the source of the module. See the usage examples below for more details.
 
 ```hcl
-github.com/pbs/terraform-aws-s3-module?ref=2.0.14
+github.com/pbs/terraform-aws-s3-module?ref=x.y.z
 ```
 
 ### Alternative Installation Methods
@@ -28,7 +28,7 @@ Integrate this module like so:
 
 ```hcl
 module "s3" {
-  source = "github.com/pbs/terraform-aws-s3-module?ref=2.0.14"
+  source = "github.com/pbs/terraform-aws-s3-module?ref=x.y.z"
 
   # Tagging Parameters
   organization = var.organization
@@ -63,7 +63,7 @@ module "s3" {
 
 If this repo is added as a subtree, then the version of the module should be close to the version shown here:
 
-`2.0.14`
+`x.y.z`
 
 Note, however that subtrees can be altered as desired within repositories.
 
@@ -135,7 +135,7 @@ Below is automatically generated documentation on this Terraform module using [t
 | <a name="input_ignore_public_acls"></a> [ignore\_public\_acls](#input\_ignore\_public\_acls) | Whether Amazon S3 should ignore public ACLs for this bucket. | `bool` | `true` | no |
 | <a name="input_inventory_config"></a> [inventory\_config](#input\_inventory\_config) | Inventory configuration | <pre>object({<br>    enabled = optional(bool, true)<br><br>    included_object_versions = optional(string, "All")<br>    destination = object({<br>      bucket = object({<br>        name       = string<br>        format     = optional(string, "Parquet")<br>        prefix     = optional(string)<br>        account_id = optional(string)<br>      })<br>    })<br>    filter = optional(object({<br>      prefix = string<br>    }))<br>    schedule = optional(object({<br>      frequency = string<br>      }), {<br>      frequency = "Daily"<br>    })<br>    optional_fields = optional(list(string), [<br>      "Size",<br>      "LastModifiedDate",<br>      "StorageClass",<br>      "IntelligentTieringAccessTier",<br>    ])<br>  })</pre> | `null` | no |
 | <a name="input_is_versioned"></a> [is\_versioned](#input\_is\_versioned) | Is versioning enabled? | `bool` | `true` | no |
-| <a name="input_lifecycle_rules"></a> [lifecycle\_rules](#input\_lifecycle\_rules) | List of maps containing configuration of object lifecycle management. | `any` | <pre>[<br>  {<br>    "abort_incomplete_multipart_upload_days": 7,<br>    "enabled": true,<br>    "id": "default-lifecycle-rule",<br>    "noncurrent_version_transition": [<br>      {<br>        "days": 30,<br>        "storage_class": "GLACIER"<br>      }<br>    ],<br>    "transition": [<br>      {<br>        "days": 7,<br>        "storage_class": "INTELLIGENT_TIERING"<br>      }<br>    ]<br>  }<br>]</pre> | no |
+| <a name="input_lifecycle_rules"></a> [lifecycle\_rules](#input\_lifecycle\_rules) | List of maps containing configuration of object lifecycle management. | <pre>list(object({<br>    id      = string<br>    enabled = optional(bool, true)<br>    filter = optional(object({<br>      and = optional(list(object({<br>        object_size_greater_than = optional(number)<br>        object_size_less_than    = optional(number)<br>        prefix                   = optional(string)<br>        tags                     = optional(map(string))<br>      })))<br>      object_size_greater_than = optional(number)<br>      object_size_less_than    = optional(number)<br>      prefix                   = optional(string)<br>      tag = optional(object({<br>        key   = string<br>        value = string<br>      }))<br>    }))<br>    abort_incomplete_multipart_upload_days = optional(number)<br>    expiration = optional(object({<br>      date                         = optional(string)<br>      days                         = optional(number)<br>      expired_object_delete_marker = optional(bool)<br>    }))<br>    noncurrent_version_expiration = optional(object({<br>      days = optional(number)<br>    }))<br>    noncurrent_version_transition = optional(list(object({<br>      days          = optional(number)<br>      storage_class = optional(string)<br>    })), [])<br>    transition = optional(list(object({<br>      date          = optional(string)<br>      days          = optional(number)<br>      storage_class = string<br>    })), [])<br>  }))</pre> | <pre>[<br>  {<br>    "abort_incomplete_multipart_upload_days": 7,<br>    "enabled": true,<br>    "id": "default-lifecycle-rule",<br>    "noncurrent_version_transition": [<br>      {<br>        "days": 30,<br>        "storage_class": "GLACIER"<br>      }<br>    ],<br>    "transition": [<br>      {<br>        "days": 7,<br>        "storage_class": "INTELLIGENT_TIERING"<br>      }<br>    ]<br>  }<br>]</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Name to use for the bucket. If null, will default to product. | `string` | `null` | no |
 | <a name="input_override_policy_documents"></a> [override\_policy\_documents](#input\_override\_policy\_documents) | List of IAM policy documents that are merged together into the exported document. In merging, statements with non-blank sids will override statements with the same sid from earlier documents in the list. Statements with non-blank sids will also override statements with the same sid from documents provided in the source\_json and source\_policy\_documents arguments. Non-overriding statements will be added to the exported document. | `list(string)` | `null` | no |
 | <a name="input_replication_configuration_set"></a> [replication\_configuration\_set](#input\_replication\_configuration\_set) | Set of (single) replication that needs to be managed by this bucket. If empty, no replication takes place. | <pre>set(object({<br>    role = string,<br>    rules = set(object({<br>      id                                           = string<br>      priority                                     = number<br>      status                                       = string<br>      destination_account_id                       = string<br>      destination_bucket                           = string<br>      destination_access_control_translation_owner = string<br>    }))<br>  }))</pre> | `[]` | no |

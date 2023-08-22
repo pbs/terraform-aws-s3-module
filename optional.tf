@@ -42,7 +42,43 @@ variable "cors_rules" {
 
 variable "lifecycle_rules" {
   description = "List of maps containing configuration of object lifecycle management."
-  type        = any
+  type = list(object({
+    id      = string
+    enabled = optional(bool, true)
+    filter = optional(object({
+      and = optional(list(object({
+        object_size_greater_than = optional(number)
+        object_size_less_than    = optional(number)
+        prefix                   = optional(string)
+        tags                     = optional(map(string))
+      })))
+      object_size_greater_than = optional(number)
+      object_size_less_than    = optional(number)
+      prefix                   = optional(string)
+      tag = optional(object({
+        key   = string
+        value = string
+      }))
+    }))
+    abort_incomplete_multipart_upload_days = optional(number)
+    expiration = optional(object({
+      date                         = optional(string)
+      days                         = optional(number)
+      expired_object_delete_marker = optional(bool)
+    }))
+    noncurrent_version_expiration = optional(object({
+      days = optional(number)
+    }))
+    noncurrent_version_transition = optional(list(object({
+      days          = optional(number)
+      storage_class = optional(string)
+    })), [])
+    transition = optional(list(object({
+      date          = optional(string)
+      days          = optional(number)
+      storage_class = string
+    })), [])
+  }))
   default = [{
     id                                     = "default-lifecycle-rule",
     enabled                                = true,
