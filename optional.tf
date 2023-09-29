@@ -17,9 +17,31 @@ variable "is_versioned" {
 }
 
 variable "acl" {
-  description = "Canned ACL for the bucket. If an ACL is not provided, the bucket will be created with ACLs disabled"
+  description = "ACL configuration for the bucket. If an ACL is not provided, the bucket will be created with ACLs disabled"
   default     = null
-  type        = string
+  type = object({
+    canned_acl            = optional(string)
+    expected_bucket_owner = optional(string)
+    access_control_policy = optional(object({
+      grants = set(object({
+        grantee = object({
+          type          = string
+          email_address = optional(string)
+          id            = optional(string)
+          uri           = optional(string)
+        })
+        permission = string
+      }))
+      owner = object({
+        id           = string
+        display_name = optional(string)
+      })
+    }))
+  })
+  validation {
+    condition     = var.acl == null || !(try(var.acl.canned_acl, null) != null && try(var.acl.access_control_policy, null) != null)
+    error_message = "Only one of canned_acl or access_control_policy can be set"
+  }
 }
 
 variable "force_destroy" {

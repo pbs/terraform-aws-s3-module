@@ -27,9 +27,32 @@ resource "aws_s3_bucket_versioning" "versioning" {
 resource "aws_s3_bucket_acl" "acl" {
   count  = var.acl != null ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
-  acl    = var.acl
+  acl    = var.acl.canned_acl
+  dynamic "access_control_policy" {
+    for_each = var.acl.access_control_policy != null ? [var.acl.access_control_policy] : []
+    content {
+      owner {
+        id           = access_control_policy.value.owner.id
+        display_name = access_control_policy.value.owner.display_name
+      }
+      dynamic "grant" {
+        for_each = access_control_policy.value.grants
+        content {
+          permission = grant.value.permission
+          grantee {
+            type          = grant.value.grantee.type
+            email_address = grant.value.grantee.email_address
+            id            = grant.value.grantee.id
+            uri           = grant.value.grantee.uri
+          }
+        }
+      }
+    }
+  }
+  depends_on = [
+    aws_s3_bucket_ownership_controls.ownership_controls,
+  ]
 }
-
 
 resource "aws_s3_bucket_ownership_controls" "ownership_controls" {
   bucket = aws_s3_bucket.bucket.id
